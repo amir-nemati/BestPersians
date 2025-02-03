@@ -1,11 +1,15 @@
 import { useState, useEffect } from "react";
 import { db } from "../firebaseConfig";
 import { collection, addDoc } from "firebase/firestore";
+import samsaberi from "../images/download.png";
 
 const streamers = [
-  { name: "Streamer A", image: "https://via.placeholder.com/150" },
-  { name: "Streamer B", image: "https://via.placeholder.com/150" },
-  { name: "Streamer C", image: "https://via.placeholder.com/150" },
+  { name: "Sam Saberi", image: samsaberi },
+  { name: "Amir Phantom", image: samsaberi },
+  { name: "Amir Eyzed", image: samsaberi },
+  { name: "Amir Eyzed", image: samsaberi },
+  { name: "Amir Eyzed", image: samsaberi },
+  { name: "Amir Eyzed", image: samsaberi  },
 ];
 
 const Vote = () => {
@@ -40,13 +44,13 @@ const Vote = () => {
       <h1 style={{ fontSize: "32px", fontWeight: "bold", marginBottom: "24px" }}>Vote for Your Favorite Streamer</h1>
       <div style={{ display: "flex", justifyContent: "center", gap: "20px", flexWrap: "wrap" }}>
         {streamers.map((streamer) => (
-          <div key={streamer.name} style={{ backgroundColor: "#1a1a1a", padding: "16px", borderRadius: "12px", textAlign: "center", boxShadow: "0px 4px 6px rgba(255, 215, 0, 0.5)", width: "200px" }}>
+          <button key={streamer.name} style={{ backgroundColor: "#1a1a1a", padding: "16px", borderRadius: "12px", textAlign: "center", boxShadow: "0px 4px 6px rgba(255, 215, 0, 0.5)", width: "200px" }}>
             <img
               src={streamer.image}
               alt={streamer.name}
               style={{ width: "100%", height: "160px", objectFit: "cover", borderRadius: "8px", marginBottom: "12px" }}
             />
-            <h2 style={{ fontSize: "20px", fontWeight: "600" }}>{streamer.name}</h2>
+            <h2 style={{ fontSize: "20px", fontWeight: "600", color: "#FFD700" }}>{streamer.name}</h2>
             <button 
               onClick={() => handleVote(streamer.name)} 
               disabled={hasVoted} 
@@ -54,7 +58,7 @@ const Vote = () => {
             >
               {hasVoted ? "Voted" : "Vote"}
             </button>
-          </div>
+          </button>
         ))}
       </div>
     </div>
