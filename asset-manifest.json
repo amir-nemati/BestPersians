@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/BestPersians/static/css/main.e6c13ad2.css",
+    "main.js": "/BestPersians/static/js/main.6a619bf7.js",
+    "index.html": "/BestPersians/index.html",
+    "main.e6c13ad2.css.map": "/BestPersians/static/css/main.e6c13ad2.css.map",
+    "main.6a619bf7.js.map": "/BestPersians/static/js/main.6a619bf7.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e6c13ad2.css",
+    "static/js/main.6a619bf7.js"
+  ]
+}
