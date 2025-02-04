@@ -4,6 +4,7 @@ import Admin from "./Admin"
 import Vote from "./pages/Vote";
 import Home from "./pages/Home";
 import Youtubers from "./pages/Youtubers";
+import Community from "./pages/Community";
 
 const App = () => {
   return (
@@ -13,6 +14,7 @@ const App = () => {
         <Route path="/vote" element={<Vote />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/youtubers" element={<Youtubers />} />
+        <Route path="/community" element={<Community />} />
       </Routes>
     </Router>
   );
