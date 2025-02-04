@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { db } from "./firebaseConfig";
 import { collection, getDocs } from "firebase/firestore";
+import { Bar } from 'react-chartjs-2';
+import Chart from 'chart.js/auto';
 
 const Admin = () => {
   const [username, setUsername] = useState("");
@@ -24,12 +26,44 @@ const Admin = () => {
       const fetchVotes = async () => {
         const querySnapshot = await getDocs(collection(db, "votes"));
         const voteData = querySnapshot.docs.map((doc) => doc.data());
-        setVotes(voteData);
+
+        // Aggregate votes per streamer
+        const voteCountsMap = {};
+        voteData.forEach(vote => {
+          if (vote.streamer) {
+            voteCountsMap[vote.streamer] = (voteCountsMap[vote.streamer] || 0) + 1;
+          }
+        });
+
+        // Convert aggregated data into arrays
+        const aggregatedVotes = Object.keys(voteCountsMap).map(streamer => ({
+          streamer,
+          count: voteCountsMap[streamer],
+        }));
+
+        setVotes(aggregatedVotes);
       };
 
       fetchVotes();
     }
   }, [isLoggedIn]);
+
+  // Prepare chart data
+  const voteLabels = votes.map(vote => vote.streamer);
+  const voteCounts = votes.map(vote => vote.count);
+
+  const chartData = {
+    labels: voteLabels,
+    datasets: [
+      {
+        label: "Votes",
+        data: voteCounts,
+        backgroundColor: "#FFD700",
+        borderColor: "#FFF",
+        borderWidth: 1,
+      },
+    ],
+  };
 
   return (
     <div style={styles.container}>
@@ -53,38 +87,104 @@ const Admin = () => {
           <button onClick={handleLogin} style={styles.button}>Login</button>
         </div>
       ) : (
-        <div style={styles.adminPanel}>
-          <h1 style={styles.title}>Admin Panel - Vote Results</h1>
-          <ul style={styles.list}>
-            {votes.map((vote, index) => (
-              <li key={index} style={styles.listItem}>{vote.streamer}</li>
-            ))}
-          </ul>
+        <div style={styles.dashboard}>
+          <div style={styles.sidebar}>
+            <h2 style={styles.sidebarTitle}>Admin Panel</h2>
+            <ul style={styles.menu}>
+              <li style={styles.menuItem}>Dashboard</li>
+              <li style={styles.menuItem}>Votes</li>
+              <li style={styles.menuItem} onClick={() => setIsLoggedIn(false)}>Logout</li>
+            </ul>
+          </div>
+          <div style={styles.content}>
+            <h1 style={styles.title}>Vote Results</h1>
+            <div style={styles.statsContainer}>
+              <div style={styles.statBox}>Total Votes: {votes.reduce((sum, vote) => sum + vote.count, 0)}</div>
+            </div>
+            <Bar data={chartData} />
+            <ul style={styles.list}>
+              {votes.map((vote, index) => (
+                <li key={index} style={styles.listItem}>
+                  {vote.streamer}: {vote.count} votes
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       )}
     </div>
   );
 };
 
-//  Styling for Golden-Black Theme
+// Styling for Golden-Black Theme with Sidebar
 const styles = {
   container: {
     display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
     height: "100vh",
     backgroundColor: "#000",
     color: "#FFD700",
   },
   loginBox: {
+    margin: "auto",
     backgroundColor: "#222",
     padding: "20px",
     borderRadius: "10px",
     boxShadow: "0px 0px 15px #FFD700",
     textAlign: "center",
   },
-  adminPanel: {
+  dashboard: {
+    display: "flex",
+    width: "100%",
+  },
+  sidebar: {
+    width: "250px",
+    backgroundColor: "#111",
+    padding: "20px",
+    height: "100vh",
+  },
+  sidebarTitle: {
+    fontSize: "20px",
+    marginBottom: "20px",
+  },
+  menu: {
+    listStyle: "none",
+    padding: 0,
+  },
+  menuItem: {
+    padding: "10px",
+    backgroundColor: "#222",
+    marginBottom: "10px",
+    borderRadius: "5px",
     textAlign: "center",
+    cursor: "pointer",
+    boxShadow: "0px 0px 5px #FFD700",
+  },
+  content: {
+    flex: 1,
+    padding: "20px",
+  },
+  statsContainer: {
+    display: "flex",
+    gap: "10px",
+    marginBottom: "20px",
+  },
+  statBox: {
+    backgroundColor: "#222",
+    padding: "15px",
+    borderRadius: "5px",
+    boxShadow: "0px 0px 5px #FFD700",
+  },
+  list: {
+    listStyle: "none",
+    padding: 0,
+  },
+  listItem: {
+    fontSize: "18px",
+    backgroundColor: "#222",
+    padding: "10px",
+    margin: "5px",
+    borderRadius: "5px",
+    boxShadow: "0px 0px 5px #FFD700",
   },
   title: {
     fontSize: "24px",
@@ -108,18 +208,6 @@ const styles = {
     cursor: "pointer",
     fontSize: "16px",
     fontWeight: "bold",
-  },
-  list: {
-    listStyle: "none",
-    padding: 0,
-  },
-  listItem: {
-    fontSize: "18px",
-    backgroundColor: "#222",
-    padding: "10px",
-    margin: "5px",
-    borderRadius: "5px",
-    boxShadow: "0px 0px 5px #FFD700",
   },
 };
 
